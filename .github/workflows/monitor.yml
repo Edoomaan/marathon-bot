@@ -1,0 +1,38 @@
+name: Etkinlik kontrolü
+
+on:
+  schedule:
+    - cron: "7,22,37,52 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: marathon-monitor
+  cancel-in-progress: false
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Kodu indir
+        uses: actions/checkout@v4
+
+      - name: Python ortamını hazırla
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.14"
+
+      - name: Bağımlılıkları yükle
+        run: python -m pip install -r requirements.txt
+
+      - name: Etkinlikleri kontrol et
+        env:
+          SPOR_ISTANBUL_USERNAME: ${{ secrets.SPOR_ISTANBUL_USERNAME }}
+          SPOR_ISTANBUL_PASSWORD: ${{ secrets.SPOR_ISTANBUL_PASSWORD }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: python auth.py
