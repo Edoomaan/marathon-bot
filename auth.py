@@ -91,8 +91,21 @@ def main():
         if message is not None:
             send_telegram_message(message)
             print("Telegram bildirimi gönderildi.")
-    except requests.RequestException:
-        raise SystemExit("HTTP isteği başarısız oldu; bağlantıyı kontrol edin.") from None
+    except requests.RequestException as error:
+        error_type = type(error).__name__
+        status = (
+            error.response.status_code
+            if error.response is not None
+            else None
+        )
+
+        details = f"Hata türü: {error_type}"
+        if status is not None:
+            details += f", HTTP durum kodu: {status}"
+
+        raise SystemExit(
+            f"Spor İstanbul isteği başarısız. {details}"
+        ) from None
     except RuntimeError as error:
         raise SystemExit(str(error)) from None
 
