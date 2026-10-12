@@ -15,6 +15,7 @@ MEMBER_URL = "https://event.spor.istanbul/member.aspx"
 
 def login(session, username, password):
     response = session.get(LOGIN_URL, timeout=20)
+    print(f"Giriş sayfası GET: {response.status_code}")
     response.raise_for_status()
 
     soup = BeautifulSoup(response.text, "html.parser")
@@ -38,9 +39,11 @@ def login(session, username, password):
     )
 
     response = session.post(action_url, data=payload, timeout=20, allow_redirects=False)
+    print(f"Giriş POST: {response.status_code}")
     response.raise_for_status()
 
     response = session.get(MEMBER_URL, timeout=20)
+    print(f"Üye sayfası GET: {response.status_code}")
     response.raise_for_status()
     soup = BeautifulSoup(response.text, "html.parser")
 
